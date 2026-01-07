@@ -129,7 +129,8 @@ public:
 		// call curl_global_init if not already done by another HTTPFS Client
 		InitCurlGlobal();
 
-		curl = make_uniq<CURLHandle>(bearer_token, SelectCURLCertPath());
+		string ca_cert = http_params.ca_cert_file.empty() ? SelectCURLCertPath() : http_params.ca_cert_file;
+		curl = make_uniq<CURLHandle>(bearer_token, ca_cert);
 		request_info = make_uniq<RequestInfo>();
 
 		// set curl options
@@ -148,6 +149,13 @@ public:
 			curl_easy_setopt(*curl, CURLOPT_SSL_VERIFYPEER, 0L); // Override default, don't verify the cert
 			curl_easy_setopt(*curl, CURLOPT_SSL_VERIFYHOST,
 			                 0L); // Override default, don't verify that the cert matches the hostname
+		}
+
+		if (!http_params.client_cert_file.empty()) {
+			curl_easy_setopt(*curl, CURLOPT_SSLCERT, http_params.client_cert_file.c_str());
+		}
+		if (!http_params.client_key_file.empty()) {
+			curl_easy_setopt(*curl, CURLOPT_SSLKEY, http_params.client_key_file.c_str());
 		}
 
 		// set read timeout

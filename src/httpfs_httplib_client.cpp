@@ -2,6 +2,9 @@
 #include "http_state.hpp"
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib.hpp"
+#include "duckdb/common/exception.hpp"
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 
 namespace duckdb {
 
@@ -9,6 +12,20 @@ class HTTPFSClient : public HTTPClient {
 public:
 	HTTPFSClient(HTTPFSParams &http_params, const string &proto_host_port) {
 		client = make_uniq<duckdb_httplib_openssl::Client>(proto_host_port);
+
+		if (!http_params.client_cert_file.empty() && !http_params.client_key_file.empty()) {
+			auto ssl_ctx = client->ssl_context();
+			if (ssl_ctx) {
+				if (SSL_CTX_use_certificate_chain_file(ssl_ctx, http_params.client_cert_file.c_str()) != 1) {
+					throw InternalException("Failed to load client certificate chain from: " + http_params.client_cert_file);
+				}
+				// Load the private key
+				if (SSL_CTX_use_PrivateKey_file(ssl_ctx, http_params.client_key_file.c_str(), SSL_FILETYPE_PEM) != 1) {
+					throw InternalException("Failed to load client private key from: " + http_params.client_key_file);
+				}
+			}
+		}
+
 		Initialize(http_params);
 	}
 	void Initialize(HTTPParams &http_p) override {

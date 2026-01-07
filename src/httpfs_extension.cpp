@@ -50,6 +50,10 @@ static void LoadInternal(ExtensionLoader &loader) {
 	                          LogicalType::BOOLEAN, Value(false));
 	config.AddExtensionOption("ca_cert_file", "Path to a custom certificate file for self-signed certificates.",
 	                          LogicalType::VARCHAR, Value(""));
+	config.AddExtensionOption("client_cert_file", "Path to a client certificate file for mTLS authentication.",
+	                          LogicalType::VARCHAR, Value(""));
+	config.AddExtensionOption("client_key_file", "Path to a client private key file for mTLS authentication.",
+	                          LogicalType::VARCHAR, Value(""));
 	// Global S3 config
 	config.AddExtensionOption("s3_region", "S3 Region", LogicalType::VARCHAR);
 	config.AddExtensionOption("s3_access_key_id", "S3 Access Key ID", LogicalType::VARCHAR);

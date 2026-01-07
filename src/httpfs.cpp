@@ -57,6 +57,8 @@ unique_ptr<HTTPParams> HTTPFSUtil::InitializeParameters(optional_ptr<FileOpener>
 	FileOpener::TryGetCurrentSetting(opener, "enable_server_cert_verification", result->enable_server_cert_verification,
 	                                 info);
 	FileOpener::TryGetCurrentSetting(opener, "ca_cert_file", result->ca_cert_file, info);
+	FileOpener::TryGetCurrentSetting(opener, "client_cert_file", result->client_cert_file, info);
+	FileOpener::TryGetCurrentSetting(opener, "client_key_file", result->client_key_file, info);
 	FileOpener::TryGetCurrentSetting(opener, "hf_max_per_page", result->hf_max_per_page, info);
 	FileOpener::TryGetCurrentSetting(opener, "unsafe_disable_etag_checks", result->unsafe_disable_etag_checks, info);
 
